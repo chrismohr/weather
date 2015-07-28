@@ -11,20 +11,19 @@ class Weather
   end
 
   def smallest_spread_day_number
-    max_diff = 0
-    max_diffs = []
-    CSV.foreach(data_file_path, csv_options) do |row|
-      diff = row["MxT"] - row["MnT"]
-      if diff > max_diff
-        max_diff = diff
-        max_diffs << row["Dy"]
-      end
-    end
-    max_diffs.last
+    temperature_spreads_by_day.each_with_index.max[1]
   end
 
 private
   attr_reader :data_file_path
+
+  def temperature_spreads_by_day
+    out = []
+    CSV.foreach(data_file_path, csv_options) do |row|
+      out[row["Dy"]] = row["MxT"] - row["MnT"]
+    end
+    out
+  end
 
   def csv_options
     { col_sep: ' ', skip_blanks: true, headers: true, :converters => [:format_temperature] }

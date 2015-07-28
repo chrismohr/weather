@@ -28,7 +28,7 @@ class Weather
   end
 
   def smallest_spread_day_number
-    days.sort_by(&:temperature_spread).last.day_number
+    days.sort_by(&:temperature_spread).first.day_number
   end
 
 private
@@ -47,6 +47,6 @@ end
 
 class TestWeather < Minitest::Test
   def test_it
-    assert(Weather.new(data_file_path: 'weather.dat').smallest_spread_day_number == 9)
+    assert(Weather.new(data_file_path: 'weather.dat').smallest_spread_day_number == 14)
   end
 end

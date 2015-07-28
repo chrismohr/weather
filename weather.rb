@@ -7,11 +7,18 @@ class Weather
   end
 
   def smallest_spread_day_number
+    max_diff = 0
+    max_diffs = []
     CSV.foreach(data_file_path, csv_options) do |row|
       max = row["MxT"].sub("*", "").to_i
       min = row["MnT"].sub("*", "").to_i
       diff = max - min
+      if diff > max_diff
+        max_diff = diff
+        max_diffs << row["Dy"].to_i
+      end
     end
+    max_diffs.last
   end
 
 private

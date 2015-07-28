@@ -5,24 +5,39 @@ CSV::Converters[:format_temperature] = lambda{ |string|
   string.sub("*", "").to_i
 }
 
+class Day
+  attr_reader :day_number
+
+  def initialize(day_number:, max_temperature:, min_temperature:)
+    @day_number      = day_number
+    @max_temperature = max_temperature
+    @min_temperature = min_temperature
+  end
+
+  def temperature_spread
+    @_temperature_spread ||= max_temperature - min_temperature
+  end
+
+private
+  attr_reader :max_temperature, :min_temperature
+end
+
 class Weather
   def initialize(data_file_path:)
     @data_file_path = data_file_path
   end
 
   def smallest_spread_day_number
-    temperature_spreads_by_day.each_with_index.max[1]
+    days.sort_by(&:temperature_spread).last.day_number
   end
 
 private
   attr_reader :data_file_path
 
-  def temperature_spreads_by_day
-    out = []
-    CSV.foreach(data_file_path, csv_options) do |row|
-      out[row["Dy"]] = row["MxT"] - row["MnT"]
+  def days
+    CSV.read(data_file_path, csv_options).map do |row|
+      Day.new(day_number: row["Dy"], max_temperature: row["MxT"], min_temperature: row["MnT"])
     end
-    out
   end
 
   def csv_options

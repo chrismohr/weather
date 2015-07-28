@@ -8,7 +8,9 @@ class Weather
 
   def smallest_spread_day_number
     CSV.foreach(data_file_path, csv_options) do |row|
-      puts row.inspect
+      max = row["MxT"].sub("*", "").to_i
+      min = row["MnT"].sub("*", "").to_i
+      diff = max - min
     end
   end
 
@@ -16,7 +18,7 @@ private
   attr_reader :data_file_path
 
   def csv_options
-    { col_sep: ' ' }
+    { col_sep: ' ', skip_blanks: true, headers: true }
   end
 end
 
